@@ -4,11 +4,11 @@ A Kubernetes-native API gateway written in Rust: an operator, control planes and
 planes in one binary; Ingress and Gateway API served from the same data plane; rate
 limiting per pod or cluster-wide with no external store to run.
 
-**Status: the data plane runs; Kubernetes is arriving.** The proxy serves traffic from a
-YAML file, and in a cluster follows Services' endpoints itself; rate limiting runs, each
-pod on its own or through EdgeRush's rate-limiting service; the control plane translates
-Ingresses but does not yet hand its config to data planes, and the operator is still to be
-built. Not for production. A hobby project with no timelines.
+**Status: the data plane runs, and the control plane runs it in a cluster; the operator is
+next.** The proxy serves traffic from a YAML file, or from a control plane that translates
+Ingresses in a cluster and streams the config to it. Rate limiting runs, each pod on its
+own or through EdgeRush's rate-limiting service. Not for production. A hobby project with
+no timelines.
 
 ### What it is for
 
@@ -30,8 +30,10 @@ HTTP/1.1, HTTP/2 and HTTP/3 (QUIC) from clients; gRPC; WebSocket; TLS on BoringS
 certificates chosen by SNI and mTLS both ways; Gateway API's matching and precedence;
 redirects, rewrites and mirrors; load balancing, health checks, timeouts and retries; TCP
 and TLS passthrough; PROXY protocol; Prometheus metrics; rate limiting, per pod or decided
-by EdgeRush's rate-limiting service. Begun: `edgerush controller`, translating Ingresses as
-the cluster changes, and the data plane following EndpointSlices itself.
+by EdgeRush's rate-limiting service. In Kubernetes: `edgerush controller`, translating
+Ingresses as the cluster changes and streaming the config to data planes, with Ingress
+status and an admission webhook; the data plane following EndpointSlices itself, preferring
+its own zone and never sending to the gateway's own pods.
 
 ### Get involved
 
