@@ -4,11 +4,12 @@ A Kubernetes-native API gateway written in Rust: an operator, control planes and
 planes in one binary; Ingress and Gateway API served from the same data plane; rate
 limiting per pod or cluster-wide with no external store to run.
 
-**Status: the data plane runs, and the control plane runs it in a cluster; the operator is
-next.** The proxy serves traffic from a YAML file, or from a control plane that translates
-a cluster's Ingresses and Gateway API objects and streams the config to it. Rate limiting runs, each pod on its
-own or through EdgeRush's rate-limiting service. Not for production. A hobby project with
-no timelines.
+**Status: the operator runs a gateway in a cluster from two resources, and Gateway API's
+conformance suite runs against it.** A `ControlPlane` and a `DataPlane` applied, or a
+Gateway written alone, become a control plane that translates the cluster's Ingresses and
+Gateway API objects and data planes that serve them. Rate limiting runs, each pod on its
+own or through EdgeRush's rate-limiting service. No images are published yet: it is built
+from source. Not for production. A hobby project with no timelines.
 
 ### What it is for
 
@@ -29,10 +30,14 @@ no timelines.
 HTTP/1.1, HTTP/2 and HTTP/3 (QUIC) from clients; gRPC; WebSocket; TLS on BoringSSL, with
 certificates chosen by SNI and mTLS both ways; Gateway API's matching and precedence;
 redirects, rewrites and mirrors; load balancing, health checks, timeouts and retries; TCP
-and TLS passthrough; PROXY protocol; Prometheus metrics; rate limiting, per pod or decided
-by EdgeRush's rate-limiting service. In Kubernetes: `edgerush controller`, translating
-Ingresses and Gateway API objects (Gateways, ListenerSets, HTTP, gRPC, TLS and TCP routes,
-BackendTLSPolicies) as the cluster changes and streaming the config to data planes, with
+and TLS passthrough; PROXY protocol; Prometheus metrics; rate limiting by token bucket,
+fixed window or exact rolling window, per pod or decided by EdgeRush's rate-limiting
+service. In Kubernetes: `edgerush operator`, making the control plane and data planes from
+`ControlPlane` and `DataPlane` resources, or a data plane for a Gateway written alone;
+Gateway API's conformance suite run in kind, GATEWAY-HTTP, GATEWAY-GRPC, GATEWAY-TLS and
+GATEWAY-TCP passing their core tests; `edgerush controller`, translating
+Ingresses and Gateway API objects (Gateways, ListenerSets, HTTP, gRPC, TLS, TCP and UDP
+routes, BackendTLSPolicies) as the cluster changes and streaming the config to data planes, with
 their status and an admission webhook; the data plane following EndpointSlices itself, preferring
 its own zone and never sending to the gateway's own pods.
 
