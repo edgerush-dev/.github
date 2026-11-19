@@ -4,12 +4,9 @@ A Kubernetes-native API gateway written in Rust: an operator, control planes and
 planes in one binary; Ingress and Gateway API served from the same data plane; rate
 limiting per pod or cluster-wide with no external store to run.
 
-**Status: the operator runs a gateway in a cluster from two resources, and Gateway API's
-conformance suite runs against it.** A `ControlPlane` and a `DataPlane` applied, or a
-Gateway written alone, become a control plane that translates the cluster's Ingresses and
-Gateway API objects and data planes that serve them. Rate limiting runs, each pod on its
-own or through EdgeRush's rate-limiting service. No images are published yet: it is built
-from source. Not for production. A hobby project with no timelines.
+**Status: it runs in a cluster, set up by its operator, and passes Gateway API's core
+conformance tests.** No images are published yet, so it is built from source. Not for
+production. A hobby project with no timelines.
 
 ### What it is for
 
@@ -27,19 +24,14 @@ from source. Not for production. A hobby project with no timelines.
 
 ### What works today
 
-HTTP/1.1, HTTP/2 and HTTP/3 (QUIC) from clients; gRPC; WebSocket; TLS on BoringSSL, with
-certificates chosen by SNI and mTLS both ways; Gateway API's matching and precedence;
-redirects, rewrites and mirrors; load balancing, health checks, timeouts and retries; TCP
-and TLS passthrough; PROXY protocol; Prometheus metrics; rate limiting by token bucket,
-fixed window or exact rolling window, per pod or decided by EdgeRush's rate-limiting
-service. In Kubernetes: `edgerush operator`, making the control plane and data planes from
-`ControlPlane` and `DataPlane` resources, or a data plane for a Gateway written alone;
-Gateway API's conformance suite run in kind, GATEWAY-HTTP, GATEWAY-GRPC, GATEWAY-TLS and
-GATEWAY-TCP passing their core tests; `edgerush controller`, translating
-Ingresses and Gateway API objects (Gateways, ListenerSets, HTTP, gRPC, TLS, TCP and UDP
-routes, BackendTLSPolicies) as the cluster changes and streaming the config to data planes, with
-their status and an admission webhook; the data plane following EndpointSlices itself, preferring
-its own zone and never sending to the gateway's own pods.
+- **Protocols:** HTTP/1.1, HTTP/2 and HTTP/3; gRPC; WebSocket; TCP, TLS passthrough and UDP
+- **TLS** on BoringSSL, with mTLS to clients and to backends
+- **Routing:** Gateway API's matching, redirects, rewrites and mirrors
+- **Backends:** load balancing, health checks, timeouts and retries
+- **Rate limiting:** token bucket, fixed or rolling window; per pod, or shared between
+  pods through EdgeRush's own service
+- **Kubernetes:** Ingress and Gateway API from one data plane, set up by the operator
+- **Conformance:** passes Gateway API's core tests for HTTP, gRPC, TLS and TCP routes
 
 ### Get involved
 
